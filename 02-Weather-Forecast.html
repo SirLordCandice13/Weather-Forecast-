@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abbostford Weather Forecast</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 20px;
+            background-color: #117A8E;
+            color: #fff;
+        }
+
+        .weather-container {
+            border: 1px solid #fff;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #2980b9;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        h2 {
+            color: #FFEA80;
+        }
+
+        p {
+            margin: 10px 0;
+            color: #FFEA80;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            margin: 10px 0;
+            background-color: #3498db;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .forecast-details {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .forecast-date {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .forecast-conditions {
+            font-size: 0.9em;
+        }
+
+        .forecast-wind {
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        #current-wind-direction {
+            font-weight: bold;
+        }
+
+        .moon-phase {
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="gifs/01sunny.gif" width="100" />
+    <div class="weather-container">
+        <h2>Abbostford, BC</h2>
+        <p>Current Temperature: <span id="current-temperature">--</span> °C</p>
+        <p>Feels Like: <span id="feels-like-temperature">--</span> °C</p>
+        <p>Current Condition: <span id="current-condition">--</span></p>
+        <p>Current Wind Speed: <span id="current-wind-speed">--</span> km/h</p>
+        <p>Current Wind Direction: <span id="current-wind-direction">--</span></p>
+        <p>Current Humidity: <span id="current-humidity">--</span>%</p>
+        <!-- Display moon phase information -->
+        <p class="moon-phase">Current Moon Phase: <span id="current-moon-phase">--</span></p>
+
+        <h2>7-Day Forecast</h2>
+        <ul id="forecast-list">
+            <!-- Forecast data will be dynamically inserted here -->
+        </ul>
+    </div>
+
+    <script>
+        const apiKey = 'BPXKBFVQA3J3FJ6AS8XKUX3P8';
+        const apiUrl = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Abbostford?unitGroup=metric&key=${apiKey}&contentType=json`;
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const currentConditions = data.currentConditions;
+
+                document.getElementById('current-temperature').textContent = currentConditions.temp;
+                document.getElementById('feels-like-temperature').textContent = currentConditions.feelslike;
+                document.getElementById('current-condition').textContent = currentConditions.conditions;
+                document.getElementById('current-wind-speed').textContent = currentConditions.windspeed;
+                document.getElementById('current-wind-direction').textContent = getCardinalDirection(currentConditions.winddir);
+                document.getElementById('current-humidity').textContent = currentConditions.humidity;
+                document.getElementById('current-moon-phase').textContent = getMoonPhaseName(currentConditions.moonphase);
+
+                const forecastList = document.getElementById('forecast-list');
+                const forecastData = data.days.slice(1, 8);
+
+                forecastData.forEach(day => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <div class="forecast-details">
+                            <div class="forecast-date">${day.datetime}</div>
+                            <div class="forecast-conditions">${day.tempmax}°C / ${day.tempmin}°C, Feels like ${day.feelslike}°C, ${day.conditions}</div>
+                            <div class="forecast-wind">Wind: ${day.windspeed} km/h, ${getCardinalDirection(day.winddir)}</div>
+                        </div>
+                        <span>${day.tempmax}°C</span>`;
+                    forecastList.appendChild(listItem);
+                });
+
+                const currentWeather = currentConditions.conditions.toLowerCase();
+                if (currentWeather.includes('sunny')) {
+                    play_animation("gifs/01sunny.gif");
+                } else if (currentWeather.includes('partially cloudy')) {
+                    play_animation("gifs/02partially-cloudy.gif");
+                } else if (currentWeather.includes('overcast')) {
+                    play_animation("gifs/03overcast.gif");
+                } else if (currentWeather.includes('stormy')) {
+                    play_animation("gifs/04stormy.gif");
+                } else if (currentWeather.includes('snowy')) {
+                    play_animation("gifs/05snowy.gif");
+                }
+            })
+            .catch(error => console.error('Error fetching weather data:', error));
+
+        function getCardinalDirection(degrees) {
+            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+            const index = Math.round(degrees / 45) % 8;
+            return directions[index];
+        }
+
+        function getMoonPhaseName(phase) {
+            const phaseNames = {
+                '0': 'New Moon',
+                '0.05-0.24': 'First Quarter Waxing Crescent',
+                '0.25': 'First Quarter Waxing Half Moon',
+                '0.26-0.49': 'First Quarter Waxing Gibbous',
+                '0.5': 'Full Moon',
+                '0.51-0.74': 'Last Quarter Waning Gibbous',
+                '0.75': 'Last Quarter Waning Half Moon',
+                '0.76-1': 'Last Quarter Waning Crescent'
+            };
+
+            for (const range in phaseNames) {
+                const [min, max] = range.split('-').map(Number);
+                if (min <= phase && phase <= (max || min)) {
+                    return phaseNames[range];
+                }
+            }
+
+            return 'Unknown Phase';
+        }
+
+        function play_animation(animation_file) {
+            const weatherImage = document.querySelector('img');
+            weatherImage.src = animation_file;
+            console.log(`Playing animation: ${animation_file}`);
+        }
+    </script>
+</body>
+
+</html>
+

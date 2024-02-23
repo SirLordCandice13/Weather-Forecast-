@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <style>
+        body {
+            background-color: #117A8E;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+
+        #iframeContainer {
+            position: relative;
+            width: 2000px; /* Adjusted the width to accommodate all iframes */
+            height: 600px;
+            display: flex;
+            /* Removed flex-wrap: wrap; */
+        }
+
+        .iframeWrapper {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            margin-right: 10px; /* Added margin for spacing between iframes */
+        }
+
+        .iframeOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+    
+    </style>
+</head>
+<body>
+
+<div id="iframeContainer">
+    <div class="iframeWrapper">
+        <iframe src="01Widget.html" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        <div class="iframeOverlay" onclick="redirectTo('01-Weather-Forecast.html')"></div>
+    </div>
+
+    <div class="iframeWrapper">
+        <iframe src="02Widget.html" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        <div class="iframeOverlay" onclick="redirectTo('02-Weather-Forecast.html')"></div>
+    </div>
+
+    <div class="iframeWrapper">
+        <iframe src="03Widget.html" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        <div class="iframeOverlay" onclick="redirectTo('03-Weather-Forecast.html')"></div>
+    </div>
+
+    <div class="iframeWrapper">
+        <iframe src="04Widget.html" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        <div class="iframeOverlay" onclick="redirectTo('04-Weather-Forecast.html')"></div>
+    </div>
+
+    <div class="iframeWrapper">
+        <iframe src="05Widget.html" width="100%" height="100%" frameborder="0" allowfullscreen></iframe>
+        <div class="iframeOverlay" onclick="redirectTo('05-Weather-Forecast.html')"></div>
+    </div>
+</div>
+
+<script>
+    function redirectTo(url) {
+        window.location.href = url;
+    }
+</script>
+
+</body>
+</html>
